@@ -1,0 +1,233 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Bastard schema",
+    "description": "Interface message specification in json format",
+    "oneOf" : [
+        { "$ref": "#/definitions/network" },
+        { "$ref": "#/definitions/device" },
+        { "$ref": "#/definitions/service" },
+        { "$ref": "#/definitions/value" },
+        { "$ref": "#/definitions/status" }
+    ],
+    "definitions": {
+        "network": {
+            "type": "object",
+            "required": [":type", ":id"],
+            "properties": {
+                ":id": {
+                    "description": "The unique identifier for a network object",
+                    "type": "string",
+                    "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                },
+                ":type": {
+                    "description": "uniform resource name",
+                    "type": "string",
+                    "enum": ["urn:seluxit:xml:bastard:network-1.0"]
+                }
+                "name": {
+                    "description": "Name of the current Device",
+                    "type": "string"
+                },
+            }
+        },
+        "device": {
+            "type": "object",
+            "required": [":type", ":id"],
+            "properties": {
+                ":id": {
+                    "description": "The unique identifier for a device object",
+                    "type": "string",
+                    "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                },
+                ":type": {
+                    "description": "Shadoway type - resource name",
+                    "type": "string",
+                    "enum": ["urn:seluxit:xml:bastard:device-1.0"]
+                },
+                "name": {
+                    "description": "Name of the current Device",
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "description": "Name of the company that create the Device",
+                    "type": "string"
+                },
+                "product": {
+                    "description": "Type of the Device",
+                    "type": "string"
+                },
+                "version" : {
+                    "description": "Version of the Device",
+                    "type": "string"
+                },
+                "serial" : {
+                    "description": "Serial of the Device",
+                    "type": "string"
+                },
+                "description" : {
+                    "description": "A description of this Device",
+                    "type": "string"
+                },
+                "protocol" : {
+                    "description": "Communication protocol used by the Device",
+                    "type": "string"
+                },
+                "communication" : {
+                    "description": "Status of the communication of the Device",
+                    "type": "string"
+                },
+                "included" : {
+                    "description": "If the Device is included in your Network (1) or not (0)",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "service": {
+            "type": "object",
+            "required": [":type", ":id"],
+            "oneOf": [
+                { "required": ["number"] },
+                { "required": ["string"] },
+                { "required": ["xml"] },
+                { "required": ["blob"] }
+            ],
+            "properties": {
+                ":id": {
+                    "description": "The unique identifier for a value object",
+                    "type": "string",
+                    "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                },
+                ":type": {
+                    "description": "Shadoway type - resource name",
+                    "type": "string",
+                    "enum": ["urn:seluxit:xml:bastard:service-1.0"]
+                },
+                "name": {
+                    "description": "Name of the current service",
+                    "type": "string"
+                },
+                "permission": {
+                    "description": "Permissions of write and reading, it can be 'r' (read only), 'w' (write only), 'rw' or 'wr' (read and write)",
+                    "type": "string",
+                    "enum" : ["r", "rw", "w", "wr"]
+                },
+                "type": {
+                    "description": "Indicate the type of the Service, i.e. 'Humidity', 'Temperature', etc.",
+                    "type": "string"
+                },
+                "number": {
+                    "description": "Contains some limitations of the data that we can receive in our device, as the minimum value, the maximum value, the steps-size between the values and the unit of the value. The unit is in the Internat    ional System of Units (SI) format.",
+                    "type": "object",
+                    "properties": {
+                        "min": { "type": "number" },
+                        "max": { "type": "number" },
+                        "step": { "type": "number" },
+                        "unit": { "type": "number" }
+                    },
+                    "required": ["min", "max", "step"],
+                    "additionalProperties": false
+                },
+                "string": {
+                    "description": "Contains the max length of the string and the used encoding",
+                    "type": "object",
+                    "properties": {
+                        "max": { "type": "number" },
+                        "encoding": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                },
+                "blob": {
+                    "description": "Contains the max length of the blob and the used encoding",
+                    "type": "object",
+                    "properties": {
+                        "max": { "type": "number" },
+                        "encoding": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                },
+                "xml": {
+                    "description": "Contains the xsd of the xml we want to user and its namespace",
+                    "type": "object",
+                    "properties": {
+                        "xsd": { "type": "string" },
+                        "namespace": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "value": {
+            "type": "object",
+            "required": [":type", ":id", "timestamp", "data"],
+            "properties": {
+                ":id": {
+                    "description": "The unique identifier for a state object",
+                    "type": "string",
+                    "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                },
+                ":type": {
+                    "description": "Shadoway type - resource name",
+                    "type": "string",
+                    "enum": ["urn:seluxit:xml:bastard:value-1.0"]
+                },
+                "type": {
+                    "description": "Indicate the type of the State",
+                    "type": "string",
+                    "enum": ["Report", "Control"]
+                },
+                "timestamp": {
+                    "description": "Denotes the time when backend receive the last data from the Device",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "data": {
+                    "description": "The data received or sent to the device. A data can have min, max and step in relation of its Service. If the Value is not included in the min-max range, then it is capped to be with in this range. If the Value do not conform the step size, then it is rounded down",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "status": {
+            "type": "object",
+             "required": [":type", ":id", "level", "message", "timestamp"],
+             "properties": {
+                ":id": {
+                    "description": "The unique identifier for a status object",
+                    "type": "string",
+                    "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                },
+                ":type": {
+                    "description": "Shadoway type - resource name",
+                    "type": "string",
+                    "enum": ["urn:seluxit:xml:bastard:status-1.0"]
+                },
+                "level": {
+                    "description": "The level of importance of the status.",
+                    "type": "string",
+                    "enum": ["important", "error", "warning", "info", "debug"]
+                },
+                "type": {
+                    "description": "The type of the status.",
+                    "type": "string",
+                    "enum": ["public key", "memory information", "device description", "value description", "value", "partner information", "action", "calculation", "timer", "calendar", "statemachine", "firmware update", "configuration", "exi", "system", "application", "gateway"]
+                },
+                "message": {
+                    "description": "Message of the status",
+                    "type": "string"
+                },
+                "timestamp": {
+                    "description": "Time of when the status occur",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "data": {
+                    "description": "Data of the status",
+                    "type": "string"
+                }
+           },
+           "additionalProperties": false
+        }
+    }
+}

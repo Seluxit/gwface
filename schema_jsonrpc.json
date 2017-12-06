@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Gateway - HomeKit interface jsonRPC",
+    "description": "Interface message specification in jsonRPC format",
+    "type": "object",
+    "oneOf": [ 
+        { "required": ["id", "jsonrpc", "result"] },
+        { "required": ["id", "jsonrpc", "error"] },
+        { "required": ["id", "jsonrpc", "method", "params"] }
+    ],
+    "properties": {
+        "id": {
+            "description": "The unique identifier for a jsonrpc",
+            "type": "string"
+        },
+        "jsonrpc": {
+            "description": "JsonRPC protocol version",
+            "type": "string",
+            "enum": ["2.0"]
+        },
+        "method": {
+            "description": "Method for communication with Gateway service and HomeKit interface",
+            "type": "string",
+            "enum": ["POST", "PUT", "GET", "DELETE"]
+        },
+        "params": {
+            "description": "Object holding paramaters values to be used during the REST methods invocation.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Data in json format - interface specification, see Json schema of data",
+                    "type": "object"
+                },
+                "url": {
+                    "description": "Type location.",
+                    "type": "string",
+                    "pattern": "/(|network|gateway|device|service|value|status|configuration|partner|action|calendar|calculation|timer|statemachine|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})*$"
+                }
+            },
+            "required": ["url"]
+        },
+        "result": {
+            "description": "Response message on success",
+            "type": "string"
+        },
+        "error": {
+            "description": "Response object on error",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "A number that indicates error type that occur",
+                    "type": "number"
+                },
+                "message": {
+                    "description": "A string providing a short description of the error",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "A primitive or structured value that contains additional information about the error",
+                    "type": "string"
+                }
+            },
+            "required": ["code", "message"]
+        }
+    }
+}
