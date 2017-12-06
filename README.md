@@ -11,6 +11,7 @@ Client functionality:
 - GET gateway
 - GET configurations, partners, actions, calendars, calculations, timers, statemachines as list
 - GET specified configuration, partner, action, calendar, calculation, timer, statemachine
+
 Gateway:
 - POST configurations, partners, actions, calendars, calculations, timers, statemachines
 - POST device status
