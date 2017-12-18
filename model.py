@@ -25,6 +25,7 @@
 # Base class - contains data, url from jsonrpc represenation and parent 
 class Item:
     def __init__(self, data, url, parent):
+        self.data = data
         self.id = data[":id"]
         self.parent = parent
         self.url = url
@@ -34,6 +35,12 @@ class Item:
     @property
     def url(self):
         return self.url
+    @property
+    def data(self):
+        return self.data
+    @data.setter
+    def data(self, data):
+        self.data = data
     @property
     def parent(self):
         return self.parent

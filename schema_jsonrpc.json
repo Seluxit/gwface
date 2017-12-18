@@ -21,7 +21,7 @@
         "method": {
             "description": "Method for communication with Gateway service and HomeKit interface",
             "type": "string",
-            "enum": ["POST", "PUT", "GET", "DELETE"]
+            "enum": ["POST", "PUT", "GET", "DELETE", "BATCH"]
         },
         "params": {
             "description": "Object holding paramaters values to be used during the REST methods invocation.",
@@ -35,6 +35,26 @@
                     "description": "Type location.",
                     "type": "string",
                     "pattern": "/(|network|gateway|device|service|value|status|configuration|partner|action|calendar|calculation|timer|statemachine|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})*$"
+                },
+                "events": {
+                    "description": "batch of events in array",
+                    "type": "array",
+                    "properties": {
+                        "method": {
+                            "description": "bab",
+                            "type": "string",
+                            "enum": ["POST", "PUT", "GET", "DELETE"]
+                        },
+                        "data": {
+                            "description": "Data in json format - interface specification, see Json schema of data",
+                            "type": "object"
+                        },
+                        "url": {
+                            "description": "Type location.",
+                            "type": "string",
+                            "pattern": "/(|network|gateway|device|service|value|status|configuration|partner|action|calendar|calculation|timer|statemachine|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})*$"
+                        }
+                    }
                 }
             },
             "required": ["url"]

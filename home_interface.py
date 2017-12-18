@@ -57,11 +57,14 @@ class Listener(Thread):
                         print(Colors.WARNING + "Response and Request jsonRPC ids do not match: " + req_id + " " + res_id + Colors.ENDC if req_id != res_id else Colors.OKBLUE + "Got Response" + Colors.ENDC) 
 
                     if "method" in myobject and myobject["method"] == "POST":
-                        print("<--- POST url: " + myobject["params"]["url"])
+                        print("<--- POST rpc ID: " + myobject["id"] + " url: " + myobject["params"]["url"])
                         update_lists(myobject)
                     elif "method" in myobject and myobject["method"] == "PUT":
-                        print("<---- PUT url: " + myobject["params"]["url"])
+                        print("<---- PUT rpc ID: " + myobject["id"] + " url: " + myobject["params"]["url"])
                         update_lists(myobject)
+                    elif "method" in myobject and myobject["method"] == "DELETE":
+                        print("<---- DELETE rpc ID: " + myobject["id"] + " url: " + myobject["params"]["url"])
+                        delete_object(myobject["params"]["url"])
                     elif "result" in myobject:
                         print(Colors.OKBLUE + "Result: " + str(myobject["result"]) + Colors.ENDC)
                     elif "error" in myobject:
@@ -110,6 +113,20 @@ class Client:
                         self.getListOfServices
                        ]
         self.iterator = enumerate(self.actions)
+
+    def includeDevice(self, item):
+        random_id = str(randint(1000, 9999))
+        print("")
+        print("---------------- Include device request PUT " + item.__class__.__name__ + " ------------------- jsonrpc_id: " + random_id)
+        jsonmsg = {}
+        jsonmsg["id"] = random_id
+        jsonmsg["jsonrpc"] = "2.0"
+        jsonmsg["method"] = "PUT"
+        jsonmsg["params"] = {}
+        jsonmsg["params"]["url"] = item.url + "/" + item.id
+        jsonmsg["params"]["data"] = item.data
+        self.socket.send(json.dumps(jsonmsg))
+
 
     def getAll(self):
         print("")
@@ -252,6 +269,12 @@ def signal_handler(signal, frame):
     print("Exiting")
     sys.exit(0)
 
+
+def delete_object(url):
+    # get UUID from url, search for that device, remove all device children, remove device.
+    pass
+
+
 # For POST and PUT
 def update_lists(jsonrpc):
     # safety check omitted for brevity
@@ -294,7 +317,12 @@ def update_lists(jsonrpc):
 
     if item == "device":
         device = model.Device(data, url, parent_id)
-        create_update_item(device, devices)
+        if device.data["included"] == "0":
+            device.data["included"] = "1"
+            client = Client("/tmp/zero_interface")
+            client.includeDevice(device)
+        else:
+            create_update_item(device, devices)
 
     if item == "service":
         service = model.Service(data, url, parent_id)
