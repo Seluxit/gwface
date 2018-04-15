@@ -9,6 +9,7 @@ from random import randint
 from Queue import Queue
 from threading import Thread
 import model
+from time import sleep
 
 # A thread-safe FIFO implementation           
 random_ids = Queue()
@@ -45,15 +46,15 @@ class Listener(Thread):
     def run(self):
         print("Listening ... on '" + self.sfile + "'")
         while True:
-            datagram = self.server.recv(1024)
+            datagram = self.server.recv(2048)
             if not datagram:
                 break
             else:
                 try:
                     myobject = json.loads(datagram)  
                     if not random_ids.empty():
-                        res_id  = myobject["id"]
                         req_id = random_ids.get()
+                        res_id  = myobject["id"]
                         print(Colors.WARNING + "Response and Request jsonRPC ids do not match: " + req_id + " " + res_id + Colors.ENDC if req_id != res_id else Colors.OKBLUE + "Got Response" + Colors.ENDC) 
 
                     if "method" in myobject and myobject["method"] == "POST":
@@ -70,11 +71,12 @@ class Listener(Thread):
                     elif "error" in myobject:
                         print(Colors.FAIL + "Error message: " + myobject["error"]["message"] + Colors.ENDC)
                     else:
-                        print(Colors.WARNING + "Not implemented!" + Colors.ENDC)
+                        print(Colors.WARNING + "Not implemented!" + Colors.ENDC + " " + myobject)
 
                 except Exception as e:
+                    reg_id = random_ids.get()
                     print(Colors.FAIL + "Invalid response: " + str(e) + Colors.ENDC)
-                    print(Colors.FAIL + json.dumps(myobject) + Colors.ENDC)
+                    print(Colors.FAIL + json.dumps(datagram) + Colors.ENDC)
 
     def __enter__(self):
         return self
@@ -110,7 +112,15 @@ class Client:
                         self.getGateway,
                         self.getNetwork,
                         self.getListOfDevices,
-                        self.getListOfServices
+                        self.getListOfServices,
+                        self.getListOfConfigurations,
+                        self.getListOfPartners,
+                        self.getListOfActions,
+                        self.getListOfCalendars,
+                        self.getListOfCalculations,
+                        self.getListOfTimers,
+                        self.getListOfStatemachines,
+                        self.postHomekit
                        ]
         self.iterator = enumerate(self.actions)
 
@@ -151,7 +161,7 @@ class Client:
 
     def getDevice(self):
         if devices:
-            device = devices[-1]
+            device = devices[0]
             self.getRequest(device)
 
     def getListOfDevices(self):
@@ -175,6 +185,37 @@ class Client:
         if devices:
             device = devices[-1]
             url = device.url + "/" + device.id + "/service"
+            self.getListRequest(url)
+
+    def getListOfConfigurations(self):
+        if devices:
+            device = devices[-1]
+            url = device.url + "/" + device.id + "/configuration"
+            self.getListRequest(url)
+
+    def getListOfPartners(self):
+        self.getListOf("partner")
+
+    def getListOfActions(self):
+        self.getListOf("action")
+
+    def getListOfCalendars(self):
+        self.getListOf("calendar")
+
+    def getListOfCalculations(self):
+        self.getListOf("calculation")
+
+    def getListOfTimers(self):
+        self.getListOf("timer")
+
+    def getListOfStatemachines(self):
+        self.getListOf("statemachine")
+
+    def getListOf(self, item_name):
+        if devices and configurations:
+            device = devices[0]
+            configuration = configurations[-1]
+            url = device.url + "/" + device.id + "/configuration/" + configuration.id + "/" + item_name
             self.getListRequest(url)
 
     def openValve(self):
@@ -255,6 +296,21 @@ class Client:
         print("")
         print("---------------- Request GET list of " + url + " ------------------- jsonrpc_id: " + random_id)
         self.socket.send('{"id":"' + random_id + '", "jsonrpc":"2.0", "method":"GET", "params":{"url":"' + url + '"}}')
+
+    def postHomekit(self):
+        random_id = str(randint(1000, 9999))
+        random_ids.put(random_id)
+        print("")
+        print("---------------- Request POST HomeKit  ------------------- jsonrpc_id: " + random_id)
+        jsonmsg = {}
+        jsonmsg["id"] = random_id
+        jsonmsg["jsonrpc"] = "2.0"
+        jsonmsg["method"] = "POST"
+        jsonmsg["params"] = {}
+        jsonmsg["params"]["url"] = "/homekit"
+        jsonmsg["params"]["data"] = {"payload": "X-HM://007JNU5AE7OSX"} 
+        self.socket.send(json.dumps(jsonmsg))
+
 
     def execute(self):
         fun = next(self.iterator, None)
