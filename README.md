@@ -10,13 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Client functionality:
 - POST Homekit payload
 
+Gateway:
+- 'homekit_payload' tag for 'gateway' data.
+- Device version components as separate tags: 'version_stack', 'version_application', 'version_boot' and
+  'version_hardware'
+
 ### Fix
 Gateway:
 - Corrected Calendar 'start', 'end' dates
 - Device 'product' tag includes device type.
-- Added 'homekit_payload' tag to 'gateway' data.
-- Added device version components as separate tags: 'version_stack', 'version_application', 'version_boot' and
-  'version_hardware'
 - GET configuration items for specified device.
 
 ## [0.3.0] - 2017-12-18
