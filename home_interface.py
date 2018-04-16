@@ -379,6 +379,17 @@ def update_lists(jsonrpc):
             client.includeDevice(device)
         else:
             create_update_item(device, devices)
+            if device.data['product']:
+                print('product: {}'.format(device.data['product']))
+            if device.data['version_hardware']:
+                print("version_hardware: {}".format(device.data['version_hardware']))
+            if device.data['version_stack']:
+                print("version_stack: {}".format(device.data['version_stack']))
+            if device.data['version_boot']:
+                print("version_boot: {}".format(device.data['version_boot']))
+            if device.data['version_application']:
+                print("version_application: {}".format(device.data['version_application']))
+
 
     if item == "service":
         service = model.Service(data, url, parent_id)

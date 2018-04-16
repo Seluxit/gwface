@@ -11,7 +11,12 @@ Client functionality:
 - POST Homekit payload
 
 ### Fix
-- Calendar 'start', 'end' dates
+Gateway:
+- Corrected Calendar 'start', 'end' dates
+- Device 'product' tag includes device type.
+- Added 'homekit_payload' tag to 'gateway' data.
+- Added device version components as separate tags: 'version_stack', 'version_application', 'version_boot' and
+  'version_hardware'
 - GET configuration items for specified device.
 
 ## [0.3.0] - 2017-12-18
@@ -25,6 +30,7 @@ Gateway:
 - DELETE device. Sending notification to all interfaces.
 
 ### Fix
+Gateway:
 - Value timestamp format in milliseconds. 
 
 ## [0.2.0] - 2017-12-06
